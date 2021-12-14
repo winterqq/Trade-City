@@ -1,0 +1,209 @@
+-- Decompiled with the Synapse X Luau decompiler.
+
+local l__JackpotNetworking__1 = game:GetService("ReplicatedStorage"):WaitForChild("JackpotNetworking");
+local l__JoinTable__2 = l__JackpotNetworking__1:WaitForChild("JoinTable");
+local l__Wager__3 = l__JackpotNetworking__1:WaitForChild("Wager");
+local l__GetTableData__4 = l__JackpotNetworking__1:WaitForChild("GetTableData");
+local l__TellWinner__5 = l__JackpotNetworking__1:WaitForChild("TellWinner");
+local l__NewTable__6 = l__JackpotNetworking__1:WaitForChild("NewTable");
+local l__RemoveTable__7 = l__JackpotNetworking__1:WaitForChild("RemoveTable");
+local l__New_Theme__8 = script.Parent:WaitForChild("New Theme");
+local l__Jackpot__9 = l__New_Theme__8:WaitForChild("Jackpot");
+local l__Table__10 = l__Jackpot__9:WaitForChild("Table");
+local l__ChooseTable__11 = l__Jackpot__9:WaitForChild("ChooseTable");
+local l__Wager__12 = l__Jackpot__9:WaitForChild("Wager");
+local l__Winner__13 = l__Jackpot__9:WaitForChild("Winner");
+local l__ViewWager__14 = l__Jackpot__9:WaitForChild("ViewWager");
+local v15 = require(script.Won);
+local v16 = require(script.ViewWager);
+local u1 = require(script.Dictionary);
+local l__Tables__2 = l__ChooseTable__11:WaitForChild("Tables");
+function addTable(p1)
+	local v17 = script.Table:Clone();
+	v17.Name = p1;
+	v17.LayoutOrder = u1.numTables();
+	v17.MouseButton1Click:Connect(function()
+		joinTable(v17.Name);
+	end);
+	v17.Parent = l__Tables__2;
+end;
+local l__Players__3 = game:GetService("Players");
+local function u4(p2, p3)
+	local v18 = l__Tables__2:FindFirstChild(p3);
+	local v19 = v18 and v18:FindFirstChild("Players");
+	return v19 and v19:FindFirstChild(p2);
+end;
+local u5 = require(script.ItemUtils);
+local l__TableBackground__6 = l__Table__10:WaitForChild("TableBackground");
+local u7 = require(script.PositionAroundTable);
+function updatePlayersTableData(p4)
+	if u1.getCurrentTable() == nil then
+		return;
+	end;
+	local v20 = {};
+	local v21 = {};
+	local v22 = p4[u1.getCurrentTable()];
+	local v23 = #v22;
+	local v24 = 1 - 1;
+	while true do
+		if v22[v24][1] == l__Players__3.LocalPlayer.Name then
+			table.insert(v20, v22[v24][1]);
+			table.insert(v21, u5.sumValue(v22[v24][2]));
+		end;
+		if 0 <= 1 then
+			if v24 < v23 then
+
+			else
+				break;
+			end;
+		elseif v23 < v24 then
+
+		else
+			break;
+		end;
+		v24 = v24 + 1;	
+	end;
+	local v25 = #v22;
+	local v26 = 1 - 1;
+	while true do
+		if v22[v26][1] ~= l__Players__3.LocalPlayer.Name then
+			table.insert(v20, v22[v26][1]);
+			table.insert(v21, u5.sumValue(v22[v26][2]));
+		end;
+		if 0 <= 1 then
+			if v26 < v25 then
+
+			else
+				break;
+			end;
+		elseif v25 < v26 then
+
+		else
+			break;
+		end;
+		v26 = v26 + 1;	
+	end;
+	local v27, v28, v29 = pairs(l__TableBackground__6:GetChildren());
+	while true do
+		local v30, v31 = v27(v28, v29);
+		if v30 then
+
+		else
+			break;
+		end;
+		v29 = v30;
+		if v31.Name ~= "Timer" then
+			v31:Destroy();
+		end;	
+	end;
+	u7(v20, 0.45, l__TableBackground__6, script.Player);
+	u7(v21, 0.35, l__TableBackground__6, script.Value, v20);
+end;
+local l__RequestJoin__8 = l__JackpotNetworking__1:WaitForChild("RequestJoin");
+local u9 = nil;
+local l__TimerUpdate__10 = l__JackpotNetworking__1:WaitForChild("TimerUpdate");
+function joinTable(p5)
+	local v32 = l__RequestJoin__8:InvokeServer(p5);
+	if v32 then
+
+	else
+		warn("That table is full. Can not join.");
+		return;
+	end;
+	u1.setAll(v32);
+	u1.setCurrentTable(p5);
+	l__ChooseTable__11.Visible = false;
+	l__Table__10.Visible = true;
+	updatePlayersTableData(u1.getAll());
+	u9 = game:GetService("RunService").Heartbeat:Connect(function()
+		task.wait(0.5);
+		l__TableBackground__6:WaitForChild("Timer").Text = l__TimerUpdate__10:InvokeServer(p5) and "";
+	end);
+end;
+local l__LeaveTable__11 = l__JackpotNetworking__1:WaitForChild("LeaveTable");
+function leaveTable()
+	l__Table__10.Visible = false;
+	l__ChooseTable__11.Visible = true;
+	l__LeaveTable__11:FireServer(u1.getCurrentTable());
+	u9:Disconnect();
+	u1.setCurrentTable(nil);
+end;
+local u12 = require(script.Wagering);
+l__Table__10.Wager.MouseButton1Click:Connect(function()
+	u12.makeWager(u1.getCurrentTable());
+end);
+l__Table__10.Leave.MouseButton1Click:Connect(function()
+	leaveTable();
+end);
+l__New_Theme__8:WaitForChild("Menu").Jackpot.Button.MouseButton1Click:Connect(function()
+	for v33, v34 in pairs({ l__Table__10.Visible, l__Wager__12.Visible, l__Winner__13.Visible, l__ViewWager__14.Visible }) do
+		if v34 == true then
+			return;
+		end;
+	end;
+	l__ChooseTable__11.Visible = true;
+end);
+l__ChooseTable__11:WaitForChild("Top"):WaitForChild("Close").MouseButton1Click:Connect(function()
+	l__ChooseTable__11.Visible = false;
+end);
+local function u13(p6, p7)
+	local v35 = l__Players__3:WaitForChild(p6, 2);
+	if not v35 then
+		return;
+	end;
+	if u4(p6, p7) then
+		return;
+	end;
+	local v36 = script.Player:Clone();
+	v36.Name = p6;
+	v36.PlayerHeadshot.Image = l__Players__3:GetUserThumbnailAsync(v35.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420);
+	v36.Parent = l__Tables__2[p7].Players;
+end;
+l__JoinTable__2.OnClientEvent:Connect(function(p8, p9, p10)
+	if u1.getEntry(p9) == nil then
+		addTable(p9);
+	end;
+	u1.setAll(p10);
+	updatePlayersTableData(p10);
+	u13(p8.Name, p9);
+	l__Tables__2[p9].Image:WaitForChild("TextLabel").Text = tostring(#u1.getEntry(p9)) .. "/" .. tostring(8);
+end);
+local function u14(p11)
+	local v37 = l__Tables__2:FindFirstChild(p11);
+	local v38 = v37 and v37:FindFirstChild("Image");
+	return v38 and v38:FindFirstChild("TextLabel");
+end;
+l__LeaveTable__11.OnClientEvent:Connect(function(p12, p13, p14)
+	u1.setAll(p14);
+	updatePlayersTableData(p14);
+	local v39 = u4(p12, p13);
+	if v39 then
+		v39:Destroy();
+	end;
+	local v40 = u14(p13);
+	if v40 then
+		v40.Text = tostring(#u1.getEntry(p13)) .. "/" .. tostring(8);
+	end;
+end);
+l__Wager__3.OnClientEvent:Connect(function(p15, p16, p17)
+	u1.setAll(p17);
+	updatePlayersTableData(p17);
+end);
+l__NewTable__6.OnClientEvent:Connect(function(p18)
+	addTable(p18);
+end);
+l__RemoveTable__7.OnClientEvent:Connect(function(p19)
+	local v41 = l__Tables__2:WaitForChild(p19, 1);
+	if v41 then
+		v41:Destroy();
+	end;
+end);
+for v42, v43 in pairs(u1.update()) do
+	addTable(v42);
+	for v44, v45 in pairs(v43) do
+		u13(v45[1], v42);
+	end;
+end;
+u12.init(l__Wager__12);
+v15.init(l__Winner__13);
+v16.init(l__ViewWager__14);
