@@ -1,0 +1,1024 @@
+-- Decompiled with the Synapse X Luau decompiler.
+
+local l__Debris__1 = game:GetService("Debris");
+local l__Players__2 = game:GetService("Players");
+local l__Workspace__3 = game:GetService("Workspace");
+local l__DataStoreService__4 = game:GetService("DataStoreService");
+local l__ReplicatedStorage__5 = game:GetService("ReplicatedStorage");
+local l__MarketplaceService__6 = game:GetService("MarketplaceService");
+local v7 = l__ReplicatedStorage__5["Game Objects"];
+local v8 = v7["Remotes\224\174\158"];
+local l__Value__9 = l__Workspace__3.Terrain:WaitForChild("Value");
+local v10 = v7["Client Controller"];
+v10:Destroy();
+wait(1);
+local l__Sell__11 = v8.Sell;
+local l__Upgrade__12 = v8.Upgrade;
+local l__Purchase__13 = v8.Purchase;
+local v14 = v8["Auto Sort"];
+local v15 = v8["Add To Market"];
+local v16 = v8["Update Marketplace"];
+local l__Templates__17 = script.Templates;
+local l__Item__18 = l__Templates__17.Item;
+_G.itemTemplate = l__Item__18;
+local v19 = l__Templates__17["Case Item"];
+local v20 = script.Parent["New Theme"];
+script.Parent:WaitForChild("Season").Text = "Season " .. l__ReplicatedStorage__5.Season.Value;
+local l__Menu__21 = v20:WaitForChild("Menu");
+local l__Trading__22 = v20.Trading;
+local v23 = v20["Menu Frames"];
+local l__Bux__24 = l__Menu__21.Bux;
+local l__Send__25 = l__Trading__22.Send;
+local l__Receive__26 = l__Trading__22.Receive;
+local l__Inventory__27 = l__Send__25.Inventory;
+local l__Client__28 = l__Receive__26.Client;
+local l__Target__29 = l__Receive__26.Target;
+local v30 = v23["Case Opening"];
+local l__Items__31 = v30.Items;
+local v32 = v23.Cases.List:GetChildren();
+local l__Choose__33 = v23.Choose;
+local l__Buttons__34 = l__Inventory__27.Buttons;
+local l__Upgrades__35 = v23.Upgrades;
+local v36 = l__Upgrades__35:GetChildren();
+local v37 = v23["Case Win"];
+local l__Item__38 = v37.Item;
+local l__Actions__39 = l__Item__38.Actions;
+local l__Backpack__40 = v23.Backpack;
+local l__Settings__41 = l__Backpack__40.Settings;
+local v42 = l__Settings__41.Sorting:GetChildren();
+local v43 = l__Settings__41.Selling:GetChildren();
+local l__List__44 = l__Backpack__40.List;
+local l__Items__45 = l__List__44.Items;
+l__Items__45.UIGridLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+	l__List__44.CanvasSize = UDim2.new(0, 0, 0, l__Items__45.UIGridLayout.AbsoluteContentSize.Y);
+end);
+local l__Incoming__46 = l__Trading__22.Incoming;
+moduleDict = require(l__Workspace__3.Terrain[l__Value__9.Value]);
+local v47 = v8["Get CaseData"]:InvokeServer();
+_G.caseData = v47;
+local v48 = l__Workspace__3.GAME.CaseBuux.Bux:GetChildren();
+for v49, v50 in pairs(v23:GetChildren()) do
+	v50:GetPropertyChangedSignal("Visible"):Connect(function()
+		if v50.Visible then
+			for v51, v52 in pairs(v23:GetChildren()) do
+				if v52 ~= v50 then
+					v52.Visible = false;
+				end;
+			end;
+		end;
+		if v50 == l__Choose__33 and not v50.Visible then
+			l__Incoming__46.Visible = false;
+		end;
+	end);
+end;
+local u1 = {};
+local u2 = {
+	Name = function(p1, p2)
+		return string.lower(p1.Name) < string.lower(p2.Name);
+	end, 
+	["Lowest Price"] = function(p3, p4)
+		return p3.AveragePrice < p4.AveragePrice;
+	end, 
+	["Highest Price"] = function(p5, p6)
+		return p6.AveragePrice < p5.AveragePrice;
+	end, 
+	Amount = function(p7, p8)
+		return p8.Amount < p7.Amount;
+	end
+};
+local u3 = false;
+local u4 = false;
+local function u5(p9)
+	p9.Visible = not p9.Visible;
+	if p9 == l__Choose__33 then
+		l__Incoming__46.Visible = l__Choose__33.Visible;
+	end;
+end;
+local u6 = v8["Retreive Statistics"];
+local u7 = nil;
+local u8 = v8["View Inventory"];
+local l__Client__9 = l__Send__25.Client;
+local l__Target__10 = l__Send__25.Target;
+local l__Client__11 = l__Buttons__34.Client;
+local l__Target__12 = l__Buttons__34.Target;
+local l__List__13 = l__Inventory__27.List;
+local u14 = v8["Send Trade"];
+local function u15(p10, p11, p12, p13)
+	local v53 = l__Item__18:clone();
+	local l__Information__54 = v53.Information;
+	local v55 = p10[p11.Type];
+	if v55 == nil then
+		warn("Trade Error | Item type data is nil for:", p11.Type);
+	end;
+	local v56 = v55 and v55.Color or Color3.new(1, 1, 1);
+	local v57 = p11.AssetID or p11.AssetId;
+	v53.Name = v57;
+	l__Information__54.AveragePrice.Text = p11.AveragePrice;
+	l__Information__54.Title.Text = p11.Name .. " (" .. p11.Amount .. ")";
+	v53.Background.ImageColor3 = v56;
+	v53.Thumbnail.Image = "https://www.roblox.com/asset-thumbnail/image?width=250&height=250&format=png&assetId=" .. v57;
+	v53.Parent = p12;
+	if p13 then
+		l__Information__54.Title.Text = p11.Name .. " (" .. p13 .. ")";
+	end;
+	return v53;
+end;
+local function u16(p14)
+	local v58 = {};
+	for v59 in tostring(p14):reverse()("%d%d?%d?") do
+		v58[#v58 + 1] = v59;
+	end;
+	return table.concat(v58, ","):reverse();
+end;
+local l__Client__17 = l__Receive__26.Client;
+local l__Target__18 = l__Receive__26.Target;
+local u19 = {};
+local l__List__20 = l__Incoming__46.List;
+local u21 = l__Templates__17["Trade Entry"];
+local u22 = v8["Trade Response"];
+local u23 = v8["Control Item"];
+local function u24(p15)
+	local v60 = l__Items__45:GetChildren();
+	for v61 = 1, #v60 do
+		local v62 = false;
+		local v63 = v60[v61];
+		for v64 = 1, #p15 do
+			local v65 = p15[v64];
+			if v63.Name == tostring(v65.AssetID or v65.AssetId) then
+				v62 = true;
+				break;
+			end;
+		end;
+		if not v62 and not v63:IsA("UILayout") then
+			v63:Destroy();
+		end;
+	end;
+end;
+local function u25(p16, p17)
+	local v66 = l__Item__18:clone();
+	local l__Information__67 = v66.Information;
+	local v68 = p16[p17.Type];
+	if v68 == nil then
+		warn("Add item error | Item type data is nil for:", p17);
+	end;
+	local v69 = v68 and v68.Color or Color3.new(1, 1, 1);
+	local v70 = p17.AssetID or p17.AssetId;
+	v66.Name = v70;
+	l__Information__67.AveragePrice.Text = p17.AveragePrice;
+	l__Information__67.Title.Text = p17.Name .. " (" .. p17.Amount .. ")";
+	v66.Background.ImageColor3 = v69;
+	v66.Thumbnail.Image = "https://www.roblox.com/asset-thumbnail/image?width=250&height=250&format=png&assetId=" .. v70;
+	v66.Parent = l__Items__45;
+	local l__Actions__26 = v66.Actions;
+	v66.Button.Activated:connect(function()
+		l__Actions__26.Visible = not l__Actions__26.Visible;
+	end);
+	l__Actions__26.Sell.Activated:connect(function()
+		u23:FireServer(v10, u7, v70, "Sell");
+	end);
+	l__Actions__26.Equip.Activated:connect(function()
+		u23:FireServer(v10, u7, v70, "Equip");
+	end);
+	l__Actions__26.Lock.Activated:connect(function()
+		u23:FireServer(v10, u7, v70, "Lock");
+	end);
+	return v66;
+end;
+local function u27(p18)
+	table.sort(u1, u2[p18]);
+	for v71 = 1, #u1 do
+		local v72 = u1[v71];
+		local v73 = l__Items__45:FindFirstChild(v72.AssetID or v72.AssetId);
+		if v73 ~= nil then
+			v73.LayoutOrder = v71;
+		end;
+	end;
+end;
+local u28 = "Highest Price";
+local u29 = nil;
+local u30 = {
+	Dev = 1200908860, 
+	Gear = 1200908926, 
+	Hair = 1200908446
+};
+local u31 = {
+	VIP = 22071766, 
+	PRO = 22071858, 
+	MVP = 22071967
+};
+local u32 = v8["Open Case"];
+local u33 = {};
+local function u34()
+	if u29 then
+		v37.Visible = true;
+		l__Item__38.Thumbnail.Sold.Visible = false;
+		l__Item__38.AveragePrice.Visible = true;
+		l__Item__38.Thumbnail.Image = "https://www.roblox.com/asset-thumbnail/image?width=250&height=250&format=png&assetId=" .. (u29.AssetID or u29.AssetId);
+		l__Item__38.Title.Text = "You won a " .. u29.Name .. "!";
+		l__Item__38.AveragePrice.Text = "$" .. u16(u29.AveragePrice);
+	end;
+end;
+local l__List__35 = l__Choose__33.List;
+local function v74()
+	local v75 = l__List__35:GetChildren();
+	for v76 = 1, #v75 do
+		local v77 = v75[v76];
+		v77.Position = UDim2.new(0.5, 0, 0, v77.Size.Y.Offset * (v76 - 1));
+	end;
+	table.sort(v75, function(p19, p20)
+		return p20.AbsolutePosition.Y < p19.AbsolutePosition.Y;
+	end);
+	local v78 = v75[1];
+	l__List__35.CanvasSize = v78 and UDim2.new(0, 0, 0, v78.Position.Y.Offset + v78.AbsoluteSize.Y) or UDim2.new(0, 0, 0, 0);
+end;
+local function u36(p21)
+	if not u3 and not u4 then
+		u3 = true;
+		l__Send__25.Visible = true;
+		v37.Visible = false;
+		v30.Visible = false;
+		l__Backpack__40.Visible = false;
+		u5(l__Choose__33);
+		local v79 = {};
+		local v80 = u8:InvokeServer(v10, u7, p21);
+		local v81 = u6:InvokeServer(v10, u7).Statistics.Upgrades.TradeSlots[1] / 5;
+		local l__Scroll__82 = l__Client__9.Scroll;
+		local l__Page__83 = l__Scroll__82.Page;
+		local l__Scroll__84 = l__Target__10.Scroll;
+		local l__Page__85 = l__Scroll__84.Page;
+		local l__Title__86 = l__Scroll__82.Title;
+		local l__Title__87 = l__Scroll__84.Title;
+		local l__List__88 = l__Inventory__27.List;
+		local l__Client__89 = l__List__88.Client;
+		local l__Collectibles__90 = l__Client__9.Items.Collectibles;
+		local l__Collectibles__91 = l__Target__10.Items.Collectibles;
+		local v92 = 0;
+		local v93 = 0;
+		local v94 = l__Collectibles__90["Item Outlines"]:GetChildren();
+		local v95 = l__Collectibles__91["Item Outlines"]:GetChildren();
+		table.sort(v94, function(p22, p23)
+			return p22.AbsolutePosition.X < p23.AbsolutePosition.X;
+		end);
+		table.sort(v95, function(p24, p25)
+			return p24.AbsolutePosition.X < p25.AbsolutePosition.X;
+		end);
+		l__Title__86.Text = "GIVING: 0";
+		l__Title__87.Text = "RECEIVING: 0";
+		l__Page__83.Text = "Page: 1";
+		l__Page__85.Text = "Page: 1";
+		l__Collectibles__90.Position = UDim2.new(0, 0, 1, 0);
+		l__Collectibles__91.Position = UDim2.new(0, 0, 1, 0);
+		l__Client__11.BackgroundTransparency = 1;
+		l__Target__12.BackgroundTransparency = 0;
+		local u37 = 1;
+		v79[#v79 + 1] = l__Scroll__82.Left.Activated:connect(function()
+			if u37 == 1 then
+				u37 = v81;
+			else
+				u37 = u37 - 1;
+			end;
+			l__Collectibles__90.Position = UDim2.new(-(u37 - 1), 0, 1, 0);
+			l__Page__83.Text = "Page: " .. u37;
+		end);
+		v79[#v79 + 1] = l__Scroll__82.Right.Activated:connect(function()
+			if u37 == v81 then
+				u37 = 1;
+			else
+				u37 = u37 + 1;
+			end;
+			l__Collectibles__90.Position = UDim2.new(-(u37 - 1), 0, 1, 0);
+			l__Page__83.Text = "Page: " .. u37;
+		end);
+		local u38 = 1;
+		v79[#v79 + 1] = l__Scroll__84.Left.Activated:connect(function()
+			if u38 == 1 then
+				u38 = v81;
+			else
+				u38 = u38 - 1;
+			end;
+			l__Collectibles__91.Position = UDim2.new(-(u38 - 1), 0, 1, 0);
+			l__Page__85.Text = "Page: " .. u38;
+		end);
+		v79[#v79 + 1] = l__Scroll__84.Right.Activated:connect(function()
+			if u38 == v81 then
+				u38 = 1;
+			else
+				u38 = u38 + 1;
+			end;
+			l__Collectibles__91.Position = UDim2.new(-(u38 - 1), 0, 1, 0);
+			l__Page__85.Text = "Page: " .. u38;
+		end);
+		local u39 = l__Client__89;
+		local l__Target__40 = l__List__88.Target;
+		v79[#v79 + 1] = l__Client__11.Activated:connect(function()
+			if u39 == l__Client__89 then
+				u39 = l__Target__40;
+				l__Client__11.BackgroundTransparency = 0;
+				l__Target__12.BackgroundTransparency = 1;
+				l__Client__89.Visible = false;
+				l__Target__40.Visible = true;
+			else
+				u39 = l__Client__89;
+				l__Client__11.BackgroundTransparency = 1;
+				l__Target__12.BackgroundTransparency = 0;
+				l__Client__89.Visible = true;
+				l__Target__40.Visible = false;
+			end;
+			local v96 = u39:GetChildren();
+			table.sort(v96, function(p26, p27)
+				return p27.AbsolutePosition.Y < p26.AbsolutePosition.Y;
+			end);
+			local v97 = v96[1];
+			l__List__13.CanvasSize = v97 and UDim2.new(0, 0, 0, v97.Position.Y.Offset + v97.AbsoluteSize.Y) or UDim2.new(0, 0, 0, 0);
+		end);
+		v79[#v79 + 1] = l__Target__12.Activated:connect(function()
+			if u39 == l__Target__40 then
+				u39 = l__Client__89;
+				l__Client__11.BackgroundTransparency = 1;
+				l__Target__12.BackgroundTransparency = 0;
+				l__Client__89.Visible = true;
+				l__Target__40.Visible = false;
+			else
+				u39 = l__Target__40;
+				l__Client__11.BackgroundTransparency = 0;
+				l__Target__12.BackgroundTransparency = 1;
+				l__Client__89.Visible = false;
+				l__Target__40.Visible = true;
+			end;
+			local v98 = u39:GetChildren();
+			table.sort(v98, function(p28, p29)
+				return p29.AbsolutePosition.Y < p28.AbsolutePosition.Y;
+			end);
+			local v99 = v98[1];
+			l__List__13.CanvasSize = v99 and UDim2.new(0, 0, 0, v99.Position.Y.Offset + v99.AbsoluteSize.Y) or UDim2.new(0, 0, 0, 0);
+		end);
+		local u41 = {};
+		local u42 = {};
+		v79[#v79 + 1] = l__Client__9.Buttons.Cancel.Activated:connect(function()
+			l__Client__89:ClearAllChildren();
+			l__Target__40:ClearAllChildren();
+			u39 = l__Client__89;
+			for v100 = 1, #v79 do
+				v79[v100]:disconnect();
+			end;
+			for v101 = 1, #u41 do
+				local v102 = table.remove(u41);
+				if v102 then
+					v102[2]:Destroy();
+				end;
+			end;
+			for v103 = 1, #u42 do
+				local v104 = table.remove(u42);
+				if v104 then
+					v104[2]:Destroy();
+				end;
+			end;
+			u41 = {};
+			u42 = {};
+			l__Send__25.Visible = false;
+			u3 = false;
+		end);
+		v79[#v79 + 1] = l__Client__9.Buttons.Confirm.Activated:connect(function()
+			l__Client__89:ClearAllChildren();
+			l__Target__40:ClearAllChildren();
+			u39 = l__Client__89;
+			local v105 = {};
+			local v106 = {};
+			for v107 = 1, #v79 do
+				v79[v107]:disconnect();
+			end;
+			for v108 = 1, #u41 do
+				local v109 = table.remove(u41);
+				v105[#v105 + 1] = v109[1];
+				v109[2]:Destroy();
+			end;
+			for v110 = 1, #u42 do
+				local v111 = table.remove(u42);
+				v106[#v106 + 1] = v111[1];
+				v111[2]:Destroy();
+			end;
+			u14:FireServer(v10, u7, p21, v105, v106);
+			l__Send__25.Visible = false;
+			u3 = false;
+		end);
+		local v112 = 0;
+		local v113 = math.floor(l__List__13.AbsoluteSize.X / 100);
+		for v114 = 1, #u1 do
+			local v115 = u1[v114];
+			local v116 = u15(v47, v115, l__Client__89);
+			v116.Size = UDim2.new(0, 100, 0, 100);
+			v116.Position = UDim2.new(0, 0 * 100, 0, v112 * 100);
+			local v117 = 0 + 1;
+			if v117 == v113 then
+				v117 = 0;
+				v112 = v112 + 1;
+			end;
+			local u43 = v92;
+			v116.Button.Activated:connect(function()
+				if v81 * 5 <= #u41 then
+					return;
+				end;
+				local v118 = false;
+				for v119 = 1, #u41 do
+					local v120 = u41[v119];
+					if (v120[1].AssetID or v120[1].AssetId) == tonumber(v116.Name) then
+						if v120[1].Mult < v115.Amount then
+							u43 = u43 + v115.AveragePrice;
+							v120[1].Mult = v120[1].Mult + 1;
+							v120[2].Information.Title.Text = v115.Name .. " (" .. v120[1].Mult .. ")";
+						end;
+						v118 = true;
+						break;
+					end;
+				end;
+				if not v118 then
+					local v121 = u15(v47, v115, nil, 1);
+					v121.Size = UDim2.new(1, 0, 1, 0);
+					u43 = u43 + v115.AveragePrice;
+					v121.Button.Activated:connect(function()
+						for v122 = 1, #u41 do
+							local v123 = u41[v122];
+							if (v123[1].AssetID or v123[1].AssetId) == tonumber(v121.Name) then
+								u43 = u43 - v115.AveragePrice;
+								v123[1].Mult = v123[1].Mult - 1;
+								v123[2].Information.Title.Text = v115.Name .. " (" .. v123[1].Mult .. ")";
+								if v123[1].Mult <= 0 then
+									table.remove(u41, v122);
+									v121:Destroy();
+								end;
+								break;
+							end;
+						end;
+						for v124 = 1, #u41 do
+							u41[v124][2].Parent = v94[v124];
+						end;
+						l__Title__86.Text = "GIVING: " .. u16(u43);
+					end);
+					local v125 = {};
+					for v126, v127 in next, v115 do
+						v125[v126] = v127;
+					end;
+					v125.Mult = 1;
+					v125.Amount = 1;
+					u41[#u41 + 1] = { v125, v121 };
+				end;
+				for v128 = 1, #u41 do
+					u41[v128][2].Parent = v94[v128];
+				end;
+				l__Title__86.Text = "GIVING: " .. u16(u43);
+			end);
+		end;
+		local v129 = l__Client__89:GetChildren()[#u1];
+		l__List__13.CanvasSize = v129 and UDim2.new(0, 0, 0, v129.Position.Y.Offset + v129.AbsoluteSize.Y) or UDim2.new(0, 0, 0, 0);
+		local v130 = 0;
+		local v131 = math.floor(l__List__13.AbsoluteSize.X / 100);
+		for v132 = 1, #v80 do
+			local u44 = v80[v132];
+			local u45 = u15(v47, u44, l__Target__40);
+			u45.Size = UDim2.new(0, 100, 0, 100);
+			u45.Position = UDim2.new(0, 0 * 100, 0, v130 * 100);
+			local v133 = 0 + 1;
+			if v133 == v131 then
+				v133 = 0;
+				v130 = v130 + 1;
+			end;
+			local u46 = v93;
+			u45.Button.Activated:connect(function()
+				if v81 * 5 <= #u42 then
+					return;
+				end;
+				local v134 = false;
+				for v135 = 1, #u42 do
+					local v136 = u42[v135];
+					if (v136[1].AssetID or v136[1].AssetId) == tonumber(u45.Name) then
+						if v136[1].Mult < u44.Amount then
+							u46 = u46 + u44.AveragePrice;
+							v136[1].Mult = v136[1].Mult + 1;
+							v136[2].Information.Title.Text = u44.Name .. " (" .. v136[1].Mult .. ")";
+						end;
+						v134 = true;
+						break;
+					end;
+				end;
+				if not v134 then
+					local v137 = u15(v47, u44, nil, 1);
+					v137.Size = UDim2.new(1, 0, 1, 0);
+					u46 = u46 + u44.AveragePrice;
+					v137.Button.Activated:connect(function()
+						for v138 = 1, #u42 do
+							local v139 = u42[v138];
+							if (v139[1].AssetID or v139[1].AssetId) == tonumber(v137.Name) then
+								u46 = u46 - u44.AveragePrice;
+								v139[1].Mult = v139[1].Mult - 1;
+								v139[2].Information.Title.Text = u44.Name .. " (" .. v139[1].Mult .. ")";
+								if v139[1].Mult <= 0 then
+									table.remove(u42, v138);
+									v137:Destroy();
+								end;
+								break;
+							end;
+						end;
+						for v140 = 1, #u42 do
+							u42[v140][2].Parent = v95[v140];
+						end;
+						l__Title__87.Text = "RECEIVING: " .. u16(u46);
+					end);
+					local v141 = {};
+					for v142, v143 in next, u44 do
+						v141[v142] = v143;
+					end;
+					v141.Mult = 1;
+					v141.Amount = 1;
+					u42[#u42 + 1] = { v141, v137 };
+				end;
+				for v144 = 1, #u42 do
+					u42[v144][2].Parent = v95[v144];
+				end;
+				l__Title__87.Text = "RECEIVING: " .. u16(u46);
+			end);
+		end;
+		local v145 = u39:GetChildren();
+		table.sort(v145, function(p30, p31)
+			return p31.AbsolutePosition.Y < p30.AbsolutePosition.Y;
+		end);
+		local v146 = v145[1];
+		l__List__13.CanvasSize = v146 and UDim2.new(0, 0, 0, v146.Position.Y.Offset + v146.AbsoluteSize.Y) or UDim2.new(0, 0, 0, 0);
+	end;
+end;
+local function v147(p32)
+	local l__Name__148 = p32.Name;
+	if not l__List__35:FindFirstChild(l__Name__148) then
+		local v149 = u21:clone();
+		v149.Name = l__Name__148;
+		v149.Text = l__Name__148;
+		v149.Parent = l__List__35;
+		v149.Activated:connect(function()
+			u36(p32);
+		end);
+	end;
+end;
+_G.startTrade = u36;
+local v150 = nil;
+for v151 = 1, 100 do
+	local v152 = v19:clone();
+	if v150 then
+		local v153 = 1;
+	else
+		v153 = 0;
+	end;
+	v152.Position = UDim2.new(v153, 0, 0, 0);
+	v152.Parent = v150 and l__Items__31;
+	u33[#u33 + 1] = v152;
+	v150 = v152;
+end;
+if false then
+	v30.Button.Visible = false;
+end;
+local u47 = false;
+v30.Button.Activated:connect(function()
+	if not u47 then
+		l__MarketplaceService__6:PromptGamePassPurchase(l__Players__2.LocalPlayer, 12011039);
+	end;
+end);
+local u48 = v8["Update Case Bux\224\174\158"];
+l__Bux__24.Button.Activated:connect(function()
+	u48:FireServer(v10, u7);
+end);
+local l__Cases__49 = v23.Cases;
+l__Menu__21.Cases.Button.Activated:connect(function()
+	u5(l__Cases__49);
+end);
+l__Menu__21.Trade.Button.Activated:connect(function()
+	u5(l__Choose__33);
+end);
+l__Menu__21.Upgrades.Button.Activated:connect(function()
+	u5(l__Upgrades__35);
+end);
+local function u50()
+	local v154 = l__Upgrades__35:GetChildren();
+	local u51 = { "Frame", "TextLabel" };
+	table.sort(v154, function(p33, p34)
+		if not table.find(u51, p33.ClassName) or not table.find(u51, p34.ClassName) then
+			return;
+		end;
+		return p34.AbsolutePosition.Y < p33.AbsolutePosition.Y;
+	end);
+	local v155 = v154[1];
+	l__Upgrades__35.CanvasSize = UDim2.new(0, 0, 0, v155.Position.Y.Offset + v155.AbsoluteSize.Y);
+end;
+l__Upgrades__35.Changed:connect(function(p35)
+	if p35 == "AbsoluteSize" then
+		u50();
+	end;
+end);
+l__Menu__21.Backpack.Button.Activated:connect(function()
+	if not u4 and not u3 then
+		u29 = nil;
+		v37.Visible = false;
+		l__Backpack__40.Visible = not l__Backpack__40.Visible;
+	end;
+end);
+local function u52(p36)
+	if not u4 and not u3 then
+		local v156 = u30[p36];
+		if v156 then
+			l__MarketplaceService__6:PromptProductPurchase(l__Players__2.LocalPlayer, v156);
+		end;
+		local l__LocalPlayer__157 = game.Players.LocalPlayer;
+		if u31[p36] then
+			local v158 = u31[p36];
+			if not l__MarketplaceService__6:UserOwnsGamePassAsync(l__LocalPlayer__157.UserId, v158) then
+				l__MarketplaceService__6:PromptGamePassPurchase(l__LocalPlayer__157, v158);
+			end;
+		end;
+		u4 = true;
+		local v159, v160, v161, v162 = u32:InvokeServer(v10, u7, p36);
+		if not v159 then
+			u4 = false;
+			return;
+		end;
+		u29 = nil;
+		v37.Visible = false;
+		v30.Visible = true;
+		l__Backpack__40.Visible = false;
+		for v163 = 1, #u33 do
+			local v164 = u33[v163];
+			local v165 = v160[v163];
+			v164.Image = "https://www.roblox.com/asset-thumbnail/image?width=250&height=250&format=png&assetId=" .. (v165.AssetID or v165.AssetId);
+			v164.BackgroundColor3 = v47[v165.Type].Color;
+		end;
+		if l__MarketplaceService__6:UserOwnsGamePassAsync(l__Players__2.LocalPlayer.UserId, 12011039) then
+			u29 = v160[v161];
+			u29.Type = p36;
+			v30.Visible = false;
+			u33[1].Position = UDim2.new(0, 0, 0, 0);
+			u4 = false;
+			u34();
+			return;
+		end;
+		wait(2.5);
+		local l__Pointer__166 = v30.Pointer;
+		local v167 = u33[v161];
+		local l__AbsoluteSize__168 = v167.AbsoluteSize;
+		u33[1]:TweenPosition(UDim2.new(0, -(v161 * v167.AbsoluteSize.X - l__Pointer__166.AbsolutePosition.X - math.random(l__AbsoluteSize__168.X / 5, l__AbsoluteSize__168.X - l__Pointer__166.AbsoluteSize.X)), 0, 0), "Out", "Quint", v162, false, function()
+			u29 = v160[v161];
+			u29.Type = p36;
+			v30.Visible = false;
+			u33[1].Position = UDim2.new(0, 0, 0, 0);
+			u4 = false;
+			u34();
+		end);
+	end;
+end;
+l__Actions__39.Spin.Activated:connect(function()
+	if u29 then
+		u52(u29.Type);
+	end;
+end);
+l__Actions__39.Sell.Activated:connect(function()
+	if u29 then
+		l__Item__38.Thumbnail.Sold.Visible = true;
+		l__Item__38.AveragePrice.Visible = false;
+		u23:FireServer(v10, u7, u29.AssetID or u29.AssetId, "Sell");
+	end;
+end);
+l__Actions__39.Equip.Activated:connect(function()
+	if u29 then
+		u23:FireServer(v10, u7, u29.AssetID or u29.AssetId, "Equip");
+	end;
+end);
+l__Actions__39.Close.Activated:connect(function()
+	u29 = nil;
+	v37.Visible = false;
+end);
+for v169 = 1, #v42 do
+	local v170 = v42[v169];
+	if not v170:IsA("UIListLayout") and not v170:IsA("TextLabel") then
+		v170.Activated:connect(function()
+			u27(v170.Name);
+			u28 = v170.Name;
+		end);
+	end;
+end;
+for v171 = 1, #v43 do
+	local v172 = v43[v171];
+	if not v172:IsA("UIListLayout") and not v172:IsA("TextLabel") then
+		v172.Activated:connect(function()
+			v172.Confirmation.Visible = not v172.Confirmation.Visible;
+		end);
+		v172.Confirmation.Yes.Activated:connect(function()
+			v172.Confirmation.Visible = false;
+			l__Sell__11:FireServer(v10, u7, v172.Name);
+		end);
+		v172.Confirmation.No.Activated:connect(function()
+			v172.Confirmation.Visible = false;
+		end);
+	end;
+end;
+for v173 = 1, #v32 do
+	local v174 = v32[v173];
+	if not v174:IsA("UIGridLayout") and not v174:IsA("Folder") then
+		local v175 = v47[v174.Name];
+		local v176 = v175 and v175.Cost;
+		if v176 then
+			v174.Cost.Text = " ($" .. u16(v176) .. ")";
+		end;
+		v174.Button.Activated:connect(function()
+			u52(v174.Name);
+		end);
+	end;
+end;
+local v177 = { "Folder", "UIGridLayout", "UIListLayout" };
+for v178 = 1, #v36 do
+	local v179 = v36[v178];
+	local l__GamepassID__180 = v179:FindFirstChild("GamepassID");
+	if l__GamepassID__180 then
+		v179.Purchase.Activated:Connect(function()
+			l__MarketplaceService__6:PromptGamePassPurchase(l__Players__2.LocalPlayer, l__GamepassID__180.Value);
+		end);
+	elseif not table.find(v177, v179.ClassName) then
+		v179.Purchase.Activated:connect(function()
+			l__Upgrade__12:FireServer(v10, u7, v179.Name);
+		end);
+	end;
+end;
+v8["Get Passcode"].OnClientInvoke = function(p37)
+	return moduleDict.get(p37, script, l__Value__9);
+end;
+local u53 = l__Bux__24["Case Bux"];
+local l__Amount__54 = l__Bux__24.Amount;
+local l__TradeSlots__55 = l__Upgrades__35.TradeSlots;
+local l__CaseSpeed__56 = l__Upgrades__35.CaseSpeed;
+local function u57(p38, p39, p40)
+	local v181 = 0;
+	u1 = p39;
+	local v182 = math.floor(l__Items__45.AbsoluteSize.X / l__Item__18.Size.X.Offset);
+	local v183 = u24(p39);
+	for v184 = 1, #p39 do
+		local v185 = p39[v184];
+		local v186 = v185.AssetID or v185.AssetId;
+		local v187 = l__Items__45:FindFirstChild(v186);
+		if not v183 then
+			if not v187 then
+				v187 = u25(p38, v185);
+			else
+				v187.Information.Title.Text = v185.Name .. " (" .. v185.Amount .. ")";
+			end;
+		end;
+		if p40[tostring(v186)] then
+			local v188 = "UNEQUIP";
+		else
+			v188 = "EQUIP";
+		end;
+		v187.Actions.Equip.Text = v188;
+		if v185.Locked then
+			local v189 = "UNLOCK";
+		else
+			v189 = "LOCK";
+		end;
+		v187.Actions.Lock.Text = v189;
+		v187.Information.Locked.Visible = v185.Locked;
+		local v190 = v181 + 1;
+		if v190 == v182 then
+			v190 = 0;
+		end;
+	end;
+	local v191 = l__Items__45:GetChildren()[1];
+	u27(u28);
+end;
+v8["Update Client"].OnClientEvent:connect(function(p41)
+	if not p41 then
+		return;
+	end;
+	u7 = moduleDict.get(p41, script, l__Value__9);
+	local l__Statistics__192 = p41.Statistics;
+	local l__Upgrades__193 = l__Statistics__192.Upgrades;
+	u53.Text = "$" .. u16(l__Statistics__192.Bux);
+	l__Amount__54.Text = string.format("%s per click", u16(l__Upgrades__193.BuxPerClick[1]));
+	l__TradeSlots__55.Title.Text = string.format("+5 Trading Slots (%d slots)", l__Upgrades__193.TradeSlots[1]);
+	l__CaseSpeed__56.Title.Text = "-0.1 Case Speed (" .. math.floor(l__Upgrades__193.CaseSpeed[1] * 10) / 10 .. " seconds)";
+	for v194, v195 in next, l__Upgrades__193 do
+		if math.floor(v195[1] * 10) / 10 == math.floor(v195[3] * 10) / 10 then
+			local v196 = "MAXED";
+		else
+			v196 = "Buy [%s]";
+		end;
+		l__Upgrades__35[v194].Purchase.Text = v196:format(u16(v195[4]));
+	end;
+	if not u47 then
+		u47 = p41.Purchasing["12011039"];
+		if u47 then
+			v30.Button.Visible = false;
+		end;
+	end;
+	u57(v47, p41.Assets, p41.Equipped);
+end);
+local function u58(p42, p43, p44, p45)
+	if not u3 and not u4 then
+		local v197 = nil;
+		local v198 = nil;
+		u3 = true;
+		l__Send__25.Visible = false;
+		l__Receive__26.Visible = true;
+		v37.Visible = false;
+		v30.Visible = false;
+		l__Backpack__40.Visible = false;
+		u5(l__Choose__33);
+		local v199 = {};
+		v198 = 0;
+		v197 = 0;
+		local l__Scroll__200 = l__Client__17.Scroll;
+		local l__Page__201 = l__Scroll__200.Page;
+		local l__Scroll__202 = l__Target__18.Scroll;
+		local l__Page__203 = l__Scroll__202.Page;
+		local l__Title__204 = l__Scroll__200.Title;
+		local l__Title__205 = l__Scroll__202.Title;
+		local l__Collectibles__206 = l__Client__17.Items.Collectibles;
+		local l__Collectibles__207 = l__Target__18.Items.Collectibles;
+		local v208 = l__Collectibles__206["Item Outlines"]:GetChildren();
+		local v209 = l__Collectibles__207["Item Outlines"]:GetChildren();
+		local v210 = {};
+		table.sort(v208, function(p46, p47)
+			return p46.AbsolutePosition.X < p47.AbsolutePosition.X;
+		end);
+		table.sort(v209, function(p48, p49)
+			return p48.AbsolutePosition.X < p49.AbsolutePosition.X;
+		end);
+		l__Title__204.Text = "GIVING: 0";
+		l__Title__205.Text = "RECEIVING: 0";
+		l__Page__201.Text = "Page: 1";
+		l__Page__203.Text = "Page: 1";
+		l__Collectibles__206.Position = UDim2.new(0, 0, 1, 0);
+		l__Collectibles__207.Position = UDim2.new(0, 0, 1, 0);
+		for v211 = 1, #p43 do
+			local v212 = p43[v211];
+			local v213 = u15(v47, v212, v209[v211], v212.Mult);
+			v197 = v197 + v212.AveragePrice * v212.Mult;
+			v213.Size = UDim2.new(1, 0, 1, 0);
+			v210[#v210 + 1] = v213;
+		end;
+		for v214 = 1, #p44 do
+			local v215 = p44[v214];
+			local v216 = u15(v47, v215, v208[v214], v215.Mult);
+			v198 = v198 + v215.AveragePrice * v215.Mult;
+			v216.Size = UDim2.new(1, 0, 1, 0);
+			v210[#v210 + 1] = v216;
+		end;
+		l__Title__204.Text = "GIVING: " .. u16(local v217);
+		l__Title__205.Text = "RECEIVING: " .. u16(local v218);
+		local u59 = 1;
+		v199[#v199 + 1] = l__Scroll__200.Left.Activated:connect(function()
+			if u59 == 1 then
+				u59 = 6;
+			else
+				u59 = u59 - 1;
+			end;
+			l__Collectibles__206.Position = UDim2.new(-(u59 - 1), 0, 1, 0);
+			l__Page__201.Text = "Page: " .. u59;
+		end);
+		v199[#v199 + 1] = l__Scroll__200.Right.Activated:connect(function()
+			if u59 == 6 then
+				u59 = 1;
+			else
+				u59 = u59 + 1;
+			end;
+			l__Collectibles__206.Position = UDim2.new(-(u59 - 1), 0, 1, 0);
+			l__Page__201.Text = "Page: " .. u59;
+		end);
+		local u60 = 1;
+		v199[#v199 + 1] = l__Scroll__202.Left.Activated:connect(function()
+			if u60 == 1 then
+				u60 = 6;
+			else
+				u60 = u60 - 1;
+			end;
+			l__Collectibles__207.Position = UDim2.new(-(u60 - 1), 0, 1, 0);
+			l__Page__203.Text = "Page: " .. u60;
+		end);
+		v199[#v199 + 1] = l__Scroll__202.Right.Activated:connect(function()
+			if u60 == 6 then
+				u60 = 1;
+			else
+				u60 = u60 + 1;
+			end;
+			l__Collectibles__207.Position = UDim2.new(-(u60 - 1), 0, 1, 0);
+			l__Page__203.Text = "Page: " .. u60;
+		end);
+		v199[#v199 + 1] = l__Client__17.Buttons.Accept.Activated:connect(function()
+			for v219 = 1, #v199 do
+				v199[v219]:disconnect();
+			end;
+			for v220 = 1, #v210 do
+				local v221 = table.remove(v210);
+				if v221 then
+					v221:Destroy();
+				end;
+			end;
+			for v222 = 1, #u19 do
+				if u19[v222] == p45 then
+					local v223 = table.remove(u19, v222);
+					if v223 then
+						v223:Destroy();
+					end;
+					break;
+				end;
+			end;
+			for v224 = 1, #u19 do
+				local v225 = u19[v224];
+				v225.Position = UDim2.new(0.5, 0, 0, v225.Size.Y.Offset * (v224 - 1));
+			end;
+			local v226 = u19[#u19];
+			l__List__20.CanvasSize = v226 and UDim2.new(0, 0, 0, v226.Position.Y.Offset + u21.Size.Y.Offset) or UDim2.new(0, 0, 0, 0);
+			l__Receive__26.Visible = false;
+			u22:FireServer(v10, u7, p42, true);
+			u3 = false;
+		end);
+		v199[#v199 + 1] = l__Client__17.Buttons.Decline.Activated:connect(function()
+			for v227 = 1, #v199 do
+				v199[v227]:disconnect();
+			end;
+			for v228 = 1, #v210 do
+				local v229 = table.remove(v210);
+				if v229 then
+					v229:Destroy();
+				end;
+			end;
+			for v230 = 1, #u19 do
+				if u19[v230] == p45 then
+					local v231 = table.remove(u19, v230);
+					if v231 then
+						v231:Destroy();
+					end;
+					break;
+				end;
+			end;
+			for v232 = 1, #u19 do
+				local v233 = u19[v232];
+				v233.Position = UDim2.new(0.5, 0, 0, v233.Size.Y.Offset * (v232 - 1));
+			end;
+			local v234 = u19[#u19];
+			l__List__20.CanvasSize = v234 and UDim2.new(0, 0, 0, v234.Position.Y.Offset + u21.Size.Y.Offset) or UDim2.new(0, 0, 0, 0);
+			l__Receive__26.Visible = false;
+			u22:FireServer(v10, u7, p42, false);
+			u3 = false;
+		end);
+	end;
+end;
+u14.OnClientEvent:connect(function(p50, p51, p52)
+	local v235 = u21:clone();
+	v235.Name = p50.Name;
+	v235.Text = p50.Name;
+	v235.Parent = l__List__20;
+	u19[#u19 + 1] = v235;
+	for v236 = 1, #u19 do
+		local v237 = u19[v236];
+		v237.Position = UDim2.new(0.5, 0, 0, v237.Size.Y.Offset * (v236 - 1));
+	end;
+	v235.Activated:connect(function()
+		u58(p50, p51, p52, v235);
+	end);
+	l__List__20.CanvasSize = UDim2.new(0, 0, 0, u19[#u19].Position.Y.Offset + u21.Size.Y.Offset);
+end);
+local l__Message__61 = l__Templates__17.Message;
+local l__Messages__62 = v20.Messages;
+v8["Message Client"].OnClientEvent:connect(function(p53)
+	local v238 = l__Message__61:clone();
+	v238.Body.Text = p53;
+	v238.Parent = l__Messages__62;
+	local v239 = l__Messages__62:GetChildren();
+	for v240 = 1, #v239 do
+		v239[v240].Position = UDim2.new(1, 0, 1, -75 - (v240 - 1) * v238.AbsoluteSize.Y);
+	end;
+	l__Debris__1:AddItem(v238, 5);
+end);
+for v241 = 1, #v48 do
+	local v242 = v48[v241]:GetChildren();
+	for v243 = 1, #v242 do
+		local v244 = v242[v243];
+		if v244:IsA("TextButton") then
+			v244.Activated:connect(function()
+				l__MarketplaceService__6:PromptProductPurchase(l__Players__2.LocalPlayer, tonumber(v244.ProductID.Value));
+			end);
+		end;
+	end;
+end;
+local v245 = l__Players__2:GetPlayers();
+for v246 = 1, #v245 do
+	if v245[v246] ~= l__Players__2.LocalPlayer then
+		v147(v245[v246]);
+	end;
+end;
+v74();
+l__Players__2.PlayerAdded:connect(function(p54)
+	if p54 ~= l__Players__2.LocalPlayer then
+		v147(p54);
+		v74();
+	end;
+end);
+l__Players__2.PlayerRemoving:connect(function(p55)
+	local v247 = l__List__35:FindFirstChild(p55.Name);
+	if v247 then
+		v247:Destroy();
+		v74();
+	end;
+end);
