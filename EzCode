@@ -205,7 +205,7 @@ OpenButton.Text = "Open"
 OpenButton.TextColor3 = Color3.fromRGB(170, 0, 0)
 OpenButton.TextSize = 14.000
 
-vString.Value = "Sapphire"
+vString.Value = "Diamond"
 vString.Parent = LoopCase
 
 -- Scripts:
