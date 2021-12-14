@@ -1,0 +1,349 @@
+--Made by Winter
+
+local Tradecc = Instance.new("ScreenGui")
+local Main = Instance.new("Frame")
+local Side2 = Instance.new("Frame")
+local TextLabel = Instance.new("TextLabel")
+local ChooserThing = Instance.new("TextButton")
+local SelectRuby = Instance.new("TextButton")
+local SelectDiamond = Instance.new("TextButton")
+local Side1 = Instance.new("Frame")
+local TextLabel_2 = Instance.new("TextLabel")
+local LoopCase = Instance.new("TextButton")
+local CaseColor = Instance.new("Frame")
+local TextLabel_3 = Instance.new("TextLabel")
+local LoopSell = Instance.new("TextButton")
+local SellColor = Instance.new("Frame")
+local TextLabel_4 = Instance.new("TextLabel")
+local Title = Instance.new("TextLabel")
+local Close = Instance.new("TextButton")
+local Minimized = Instance.new("Frame")
+local OpenButton = Instance.new("TextButton")
+local vString = Instance.new("StringValue")
+
+--Properties:
+
+Tradecc.Name = "Trade.cc"
+Tradecc.Parent = game.CoreGui
+Tradecc.Enabled = true
+Tradecc.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+Main.Name = "Main"
+Main.Parent = Tradecc
+Main.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+Main.BorderColor3 = Color3.fromRGB(50, 50, 50)
+Main.BorderSizePixel = 7
+Main.Position = UDim2.new(0.18802084, 0, 0.0786391571, 0)
+Main.Size = UDim2.new(0, 685, 0, 601)
+
+Side2.Name = "Side2"
+Side2.Parent = Main
+Side2.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+Side2.BorderColor3 = Color3.fromRGB(50, 50, 50)
+Side2.Position = UDim2.new(0.509047866, 0, 0.0582362711, 0)
+Side2.Size = UDim2.new(0, 303, 0, 530)
+
+TextLabel.Parent = Side2
+TextLabel.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+TextLabel.BorderSizePixel = 0
+TextLabel.Position = UDim2.new(0.0520732924, 0, -0.0115593523, 0)
+TextLabel.Size = UDim2.new(0, 35, 0, 13)
+TextLabel.Font = Enum.Font.SourceSans
+TextLabel.Text = "Text"
+TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextLabel.TextSize = 14.000
+
+ChooserThing.Name = "ChooserThing"
+ChooserThing.Parent = Side2
+ChooserThing.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+ChooserThing.BorderSizePixel = 0
+ChooserThing.Position = UDim2.new(0.0495049506, 0, 0.0452830195, 0)
+ChooserThing.Size = UDim2.new(0, 124, 0, 31)
+ChooserThing.Font = Enum.Font.SourceSans
+ChooserThing.Text = "Choose Case"
+ChooserThing.TextColor3 = Color3.fromRGB(255, 255, 255)
+ChooserThing.TextSize = 14.000
+
+SelectRuby.Name = "SelectRuby"
+SelectRuby.Parent = ChooserThing
+SelectRuby.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+SelectRuby.BorderSizePixel = 0
+SelectRuby.Position = UDim2.new(0.00161300134, 0, 0.980484009, 0)
+SelectRuby.Size = UDim2.new(0, 124, 0, 31)
+SelectRuby.Visible = false
+SelectRuby.Font = Enum.Font.SourceSans
+SelectRuby.Text = "Ruby"
+SelectRuby.TextColor3 = Color3.fromRGB(255, 255, 255)
+SelectRuby.TextSize = 14.000
+
+SelectDiamond.Name = "SelectDiamond"
+SelectDiamond.Parent = ChooserThing
+SelectDiamond.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+SelectDiamond.BorderSizePixel = 0
+SelectDiamond.Position = UDim2.new(0.00161300134, 0, 1.98048401, 0)
+SelectDiamond.Size = UDim2.new(0, 124, 0, 31)
+SelectDiamond.Visible = false
+SelectDiamond.Font = Enum.Font.SourceSans
+SelectDiamond.Text = "Diamond"
+SelectDiamond.TextColor3 = Color3.fromRGB(255, 255, 255)
+SelectDiamond.TextSize = 14.000
+
+Side1.Name = "Side1"
+Side1.Parent = Main
+Side1.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+Side1.BorderColor3 = Color3.fromRGB(50, 50, 50)
+Side1.Position = UDim2.new(0.0657824278, 0, 0.0582362711, 0)
+Side1.Size = UDim2.new(0, 303, 0, 530)
+
+TextLabel_2.Parent = Side1
+TextLabel_2.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+TextLabel_2.BorderSizePixel = 0
+TextLabel_2.Position = UDim2.new(0.0628860518, 0, -0.0115593523, 0)
+TextLabel_2.Size = UDim2.new(0, 35, 0, 13)
+TextLabel_2.Font = Enum.Font.SourceSans
+TextLabel_2.Text = "Text"
+TextLabel_2.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextLabel_2.TextSize = 14.000
+
+LoopCase.Name = "LoopCase"
+LoopCase.Parent = Side1
+LoopCase.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+LoopCase.BackgroundTransparency = 1.000
+LoopCase.Position = UDim2.new(0.0627062693, 0, 0.050943397, 0)
+LoopCase.Size = UDim2.new(0, 96, 0, 26)
+LoopCase.Font = Enum.Font.SourceSans
+LoopCase.Text = ""
+LoopCase.TextColor3 = Color3.fromRGB(0, 0, 0)
+LoopCase.TextSize = 14.000
+
+CaseColor.Name = "CaseColor"
+CaseColor.Parent = LoopCase
+CaseColor.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+CaseColor.BorderSizePixel = 0
+CaseColor.Position = UDim2.new(0.125000015, 0, 0.269230604, 0)
+CaseColor.Size = UDim2.new(0, 11, 0, 11)
+
+TextLabel_3.Parent = LoopCase
+TextLabel_3.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+TextLabel_3.BackgroundTransparency = 1.000
+TextLabel_3.Position = UDim2.new(0.4375, 0, 0.269230783, 0)
+TextLabel_3.Size = UDim2.new(0, 53, 0, 11)
+TextLabel_3.Font = Enum.Font.TitilliumWeb
+TextLabel_3.Text = "Loop Case Open"
+TextLabel_3.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextLabel_3.TextSize = 18.000
+
+LoopSell.Name = "LoopSell"
+LoopSell.Parent = Side1
+LoopSell.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+LoopSell.BackgroundTransparency = 1.000
+LoopSell.Position = UDim2.new(0.0627062693, 0, 0.124528304, 0)
+LoopSell.Size = UDim2.new(0, 96, 0, 26)
+LoopSell.Font = Enum.Font.SourceSans
+LoopSell.Text = ""
+LoopSell.TextColor3 = Color3.fromRGB(0, 0, 0)
+LoopSell.TextSize = 14.000
+
+SellColor.Name = "SellColor"
+SellColor.Parent = LoopSell
+SellColor.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+SellColor.BorderSizePixel = 0
+SellColor.Position = UDim2.new(0.125000015, 0, 0.269230604, 0)
+SellColor.Size = UDim2.new(0, 11, 0, 11)
+
+TextLabel_4.Parent = LoopSell
+TextLabel_4.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+TextLabel_4.BackgroundTransparency = 1.000
+TextLabel_4.Position = UDim2.new(0.302083343, 0, 0.269230783, 0)
+TextLabel_4.Size = UDim2.new(0, 53, 0, 11)
+TextLabel_4.Font = Enum.Font.TitilliumWeb
+TextLabel_4.Text = "Loop Sell"
+TextLabel_4.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextLabel_4.TextSize = 18.000
+
+Title.Name = "Title"
+Title.Parent = Main
+Title.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+Title.BackgroundTransparency = 1.000
+Title.BorderSizePixel = 0
+Title.Position = UDim2.new(-0.00134749583, 0, -0.00157599675, 0)
+Title.Size = UDim2.new(0, 76, 0, 21)
+Title.Font = Enum.Font.SciFi
+Title.Text = "trade.cc"
+Title.TextColor3 = Color3.fromRGB(0, 255, 0)
+Title.TextSize = 20.000
+
+Close.Name = "Close"
+Close.Parent = Main
+Close.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Close.BackgroundTransparency = 1.000
+Close.Position = UDim2.new(0.899270058, 0, -0.00166389346, 0)
+Close.Size = UDim2.new(0, 69, 0, 36)
+Close.Font = Enum.Font.SourceSans
+Close.Text = "Close"
+Close.TextColor3 = Color3.fromRGB(170, 0, 0)
+Close.TextSize = 14.000
+
+Minimized.Name = "Minimized"
+Minimized.Parent = Tradecc
+Minimized.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+Minimized.BorderColor3 = Color3.fromRGB(50, 50, 50)
+Minimized.BorderSizePixel = 5
+Minimized.Position = UDim2.new(0.590104163, 0, 0.163190186, 0)
+Minimized.Size = UDim2.new(0, 167, 0, 39)
+Minimized.Visible = false
+
+OpenButton.Name = "OpenButton"
+OpenButton.Parent = Minimized
+OpenButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+OpenButton.BackgroundTransparency = 1.000
+OpenButton.BorderSizePixel = 0
+OpenButton.Position = UDim2.new(0.233532935, 0, 0.284382343, 0)
+OpenButton.Size = UDim2.new(0, 89, 0, 16)
+OpenButton.Font = Enum.Font.SciFi
+OpenButton.Text = "Open"
+OpenButton.TextColor3 = Color3.fromRGB(170, 0, 0)
+OpenButton.TextSize = 14.000
+
+vString.Value = "Sapphire"
+vString.Parent = LoopCase
+
+-- Scripts:
+
+Main.Active = true
+Main.Draggable = true
+Minimized.Active = true
+Minimized.Draggable = true
+
+local function PVYB_fake_script() -- SelectRuby.LocalScript 
+	local script = Instance.new('LocalScript', SelectRuby)
+
+	SelectRuby.MouseButton1Click:Connect(function()
+		vString.Value = "Sapphire"
+	end)
+	
+end
+coroutine.wrap(PVYB_fake_script)()
+local function ZOCWBWL_fake_script() -- SelectDiamond.LocalScript 
+	local script = Instance.new('LocalScript', SelectDiamond)
+
+	SelectDiamond.MouseButton1Click:Connect(function()
+		vString.Value = "Legendary"
+	end)
+	
+end
+coroutine.wrap(ZOCWBWL_fake_script)()
+local function ASRGAFS_fake_script() -- ChooserThing.LocalScript 
+	local script = Instance.new('LocalScript', ChooserThing)
+
+	local Ruby = ChooserThing.SelectRuby
+	local Diamond = ChooserThing.SelectDiamond
+
+	ChooserThing.MouseButton1Click:Connect(function()
+		if Ruby.Visible == false then
+			Ruby.Visible = true
+			Diamond.Visible = true
+		else
+			if Ruby.Visible == true then
+				Ruby.Visible = false
+				Diamond.Visible = false
+			end
+		end
+	end)
+	
+end
+coroutine.wrap(ASRGAFS_fake_script)()
+local function MHNNFQH_fake_script() -- LoopCase.LocalScript 
+	local script = Instance.new('LocalScript', LoopCase)
+
+	local green = Color3.new(0, 0.666667, 0)
+	local gray = Color3.new(0.196078, 0.196078, 0.196078)
+	local CanLoop = false
+
+
+	LoopCase.MouseButton1Click:Connect(function()
+
+		if CanLoop then
+			CanLoop = false
+		else
+			CanLoop = true
+		end
+
+		spawn(function()
+			if CanLoop == false then
+				CaseColor.BackgroundColor3 = gray
+			else
+				if CanLoop == true then
+					CaseColor.BackgroundColor3 = green
+				end
+			end
+		end)
+
+	end)
+
+	while true do 
+		wait()
+		if CanLoop then 
+			game:GetService("ReplicatedStorage"):FindFirstChild("Game Objects"):FindFirstChild("Remotes\224\174\158"):FindFirstChild("Open Case"):InvokeServer(getNil("Client Controller", "LocalScript"), 55500, (vString.Value))
+		end
+	end
+	
+end
+coroutine.wrap(MHNNFQH_fake_script)()
+local function MTNRIIP_fake_script() -- LoopSell.LocalScript 
+	local script = Instance.new('LocalScript', LoopSell)
+
+	local green = Color3.new(0, 0.666667, 0)
+	local gray = Color3.new(0.196078, 0.196078, 0.196078)
+	local CanLoop = false
+
+
+	LoopSell.MouseButton1Click:Connect(function()
+
+		if CanLoop then
+			CanLoop = false
+		else
+			CanLoop = true
+		end
+
+		spawn(function()
+			if CanLoop == false then
+				SellColor.BackgroundColor3 = gray
+			else
+				if CanLoop == true then
+					SellColor.BackgroundColor3 = green
+				end
+			end
+		end)
+
+	end)
+
+	while true do 
+		wait()
+		if CanLoop then 
+			game:GetService("ReplicatedStorage"):FindFirstChild("Game Objects"):FindFirstChild("Remotes\224\174\158").Sell:FireServer(getNil("Client Controller", "LocalScript"), 5505099005, "All")
+		end
+	end
+	
+end
+coroutine.wrap(MTNRIIP_fake_script)()
+local function MOLK_fake_script() -- Close.LocalScript 
+	local script = Instance.new('LocalScript', Close)
+
+	Close.MouseButton1Click:Connect(function()
+		Main.Visible = false
+		Minimized.Visible = true
+	end)
+	
+end
+coroutine.wrap(MOLK_fake_script)()
+local function KCAQA_fake_script() -- OpenButton.LocalScript 
+	local script = Instance.new('LocalScript', OpenButton)
+
+	OpenButton.MouseButton1Click:Connect(function()
+		Main.Visible = true
+		Minimized.Visible = false
+	end)
+	
+end
+coroutine.wrap(KCAQA_fake_script)()
